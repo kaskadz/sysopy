@@ -1,0 +1,402 @@
+Library: static
+O-level: 0
+===============================================
+ Array type is: DYNAMIC
+ It consists of >>1000<< blocks and every block
+    consists of >>100<< chars.
+===============================================
+Starting measurement of DYNAMIC array creation time. (1000 times)
+Total times of 1000 actions:
+  User time:  0.10938 s =  109.37500 ms = 109375.00000 us = 109375000.00000 ns
+System time:  0.18750 s =  187.50000 ms = 187500.00000 us = 187500000.00000 ns
+  Real time:  0.29655 s =  296.55240 ms = 296552.40000 us = 296552400.00000 ns
+Average action time:
+  User time:  0.00011 s =    0.10938 ms =    109.37500 us =  109375.00000 ns
+System time:  0.00019 s =    0.18750 ms =    187.50000 us =  187500.00000 ns
+  Real time:  0.00030 s =    0.29655 ms =    296.55200 us =  296552.00000 ns
+
+===============================================
+ Array type is: STATIC
+ It consists of >>1000<< blocks and every block
+    consists of >>100<< chars.
+===============================================
+Starting measurement of STATIC array creation time. (1000 times)
+Total times of 1000 actions:
+  User time:  0.03125 s =   31.25000 ms =  31250.00000 us = 31250000.00000 ns
+System time:  0.00000 s =    0.00000 ms =      0.00000 us =       0.00000 ns
+  Real time:  0.01990 s =   19.89690 ms =  19896.90000 us = 19896900.00000 ns
+Average action time:
+  User time:  0.00003 s =    0.03125 ms =     31.25000 us =   31250.00000 ns
+System time:  0.00000 s =    0.00000 ms =      0.00000 us =       0.00000 ns
+  Real time:  0.00002 s =    0.01990 ms =     19.89600 us =   19896.00000 ns
+
+===============================================
+ Array type is: DYNAMIC
+ It consists of >>1000<< blocks and every block
+    consists of >>100<< chars.
+===============================================
+Starting time measurement of adding 1000 blocks to DYNAMIC array.
+Total times of 1000 actions:
+  User time:  0.00000 s =    0.00000 ms =      0.00000 us =       0.00000 ns
+System time:  0.00000 s =    0.00000 ms =      0.00000 us =       0.00000 ns
+  Real time:  0.00022 s =    0.22440 ms =    224.40000 us =  224400.00000 ns
+Average action time:
+  User time:  0.00000 s =    0.00000 ms =      0.00000 us =       0.00000 ns
+System time:  0.00000 s =    0.00000 ms =      0.00000 us =       0.00000 ns
+  Real time:  0.00000 s =    0.00022 ms =      0.22400 us =     224.00000 ns
+
+Starting time measurement of deleting 1000 blocks from DYNAMIC array.
+Total times of 1000 actions:
+  User time:  0.00000 s =    0.00000 ms =      0.00000 us =       0.00000 ns
+System time:  0.00000 s =    0.00000 ms =      0.00000 us =       0.00000 ns
+  Real time:  0.00005 s =    0.05460 ms =     54.60000 us =   54600.00000 ns
+Average action time:
+  User time:  0.00000 s =    0.00000 ms =      0.00000 us =       0.00000 ns
+System time:  0.00000 s =    0.00000 ms =      0.00000 us =       0.00000 ns
+  Real time:  0.00000 s =    0.00005 ms =      0.05400 us =      54.00000 ns
+
+Starting time measurement of adding and removing blocks to/from DYNAMIC array. (1000 times)
+Total times of 1000 actions:
+  User time:  0.00000 s =    0.00000 ms =      0.00000 us =       0.00000 ns
+System time:  0.00000 s =    0.00000 ms =      0.00000 us =       0.00000 ns
+  Real time:  0.00007 s =    0.06670 ms =     66.70000 us =   66700.00000 ns
+Average action time:
+  User time:  0.00000 s =    0.00000 ms =      0.00000 us =       0.00000 ns
+System time:  0.00000 s =    0.00000 ms =      0.00000 us =       0.00000 ns
+  Real time:  0.00000 s =    0.00007 ms =      0.06600 us =      66.00000 ns
+
+===============================================
+ Array type is: STATIC
+ It consists of >>1000<< blocks and every block
+    consists of >>100<< chars.
+===============================================
+Starting time measurement of adding 1000 blocks to STATIC array.
+Total times of 1000 actions:
+  User time:  0.00000 s =    0.00000 ms =      0.00000 us =       0.00000 ns
+System time:  0.00000 s =    0.00000 ms =      0.00000 us =       0.00000 ns
+  Real time:  0.00030 s =    0.29990 ms =    299.90000 us =  299900.00000 ns
+Average action time:
+  User time:  0.00000 s =    0.00000 ms =      0.00000 us =       0.00000 ns
+System time:  0.00000 s =    0.00000 ms =      0.00000 us =       0.00000 ns
+  Real time:  0.00000 s =    0.00030 ms =      0.29900 us =     299.00000 ns
+
+Starting time measurement of deleting 1000 blocks from STATIC array.
+Total times of 1000 actions:
+  User time:  0.00000 s =    0.00000 ms =      0.00000 us =       0.00000 ns
+System time:  0.00000 s =    0.00000 ms =      0.00000 us =       0.00000 ns
+  Real time:  0.00001 s =    0.01420 ms =     14.20000 us =   14200.00000 ns
+Average action time:
+  User time:  0.00000 s =    0.00000 ms =      0.00000 us =       0.00000 ns
+System time:  0.00000 s =    0.00000 ms =      0.00000 us =       0.00000 ns
+  Real time:  0.00000 s =    0.00001 ms =      0.01400 us =      14.00000 ns
+
+Starting time measurement of adding and removing blocks to/from STATIC array. (1000 times)
+Total times of 1000 actions:
+  User time:  0.00000 s =    0.00000 ms =      0.00000 us =       0.00000 ns
+System time:  0.00000 s =    0.00000 ms =      0.00000 us =       0.00000 ns
+  Real time:  0.00002 s =    0.01850 ms =     18.50000 us =   18500.00000 ns
+Average action time:
+  User time:  0.00000 s =    0.00000 ms =      0.00000 us =       0.00000 ns
+System time:  0.00000 s =    0.00000 ms =      0.00000 us =       0.00000 ns
+  Real time:  0.00000 s =    0.00002 ms =      0.01800 us =      18.00000 ns
+
+===============================================
+ Array type is: DYNAMIC
+ It consists of >>1000<< blocks and every block
+    consists of >>100<< chars.
+===============================================
+Starting time measurement of searching DYNAMIC array. (10000 times)
+Search result: Block 55 is closest to block 500
+Total times of 10000 actions:
+  User time:  4.34375 s = 4343.75000 ms = 4343750.00000 us = 4343750000.00000 ns
+System time:  0.00000 s =    0.00000 ms =      0.00000 us =       0.00000 ns
+  Real time:  4.98169 s = 4981.69170 ms = 4981691.70000 us = 4981691700.00000 ns
+Average action time:
+  User time:  0.00043 s =    0.43438 ms =    434.37500 us =  434375.00000 ns
+System time:  0.00000 s =    0.00000 ms =      0.00000 us =       0.00000 ns
+  Real time:  0.00050 s =    0.49817 ms =    498.17000 us =  498170.00000 ns
+
+===============================================
+ Array type is: STATIC
+ It consists of >>1000<< blocks and every block
+    consists of >>100<< chars.
+===============================================
+Starting time measurement of searching STATIC array. (10000 times)
+Search result: Block 450 is closest to block 500
+Total times of 10000 actions:
+  User time:  4.43750 s = 4437.50000 ms = 4437500.00000 us = 4437500000.00000 ns
+System time:  0.01562 s =   15.62500 ms =  15625.00000 us = 15625000.00000 ns
+  Real time:  4.97261 s = 4972.60830 ms = 4972608.30000 us = 4972608300.00000 ns
+Average action time:
+  User time:  0.00044 s =    0.44375 ms =    443.75000 us =  443750.00000 ns
+System time:  0.00000 s =    0.00156 ms =      1.56200 us =    1562.00000 ns
+  Real time:  0.00050 s =    0.49726 ms =    497.26100 us =  497261.00000 ns
+
+Library: shared
+O-level: 0
+===============================================
+ Array type is: DYNAMIC
+ It consists of >>1000<< blocks and every block
+    consists of >>100<< chars.
+===============================================
+Starting measurement of DYNAMIC array creation time. (1000 times)
+Total times of 1000 actions:
+  User time:  0.07812 s =   78.12500 ms =  78125.00000 us = 78125000.00000 ns
+System time:  0.12500 s =  125.00000 ms = 125000.00000 us = 125000000.00000 ns
+  Real time:  0.25189 s =  251.89430 ms = 251894.30000 us = 251894300.00000 ns
+Average action time:
+  User time:  0.00008 s =    0.07812 ms =     78.12500 us =   78125.00000 ns
+System time:  0.00013 s =    0.12500 ms =    125.00000 us =  125000.00000 ns
+  Real time:  0.00025 s =    0.25189 ms =    251.89400 us =  251894.00000 ns
+
+===============================================
+ Array type is: STATIC
+ It consists of >>1000<< blocks and every block
+    consists of >>100<< chars.
+===============================================
+Starting measurement of STATIC array creation time. (1000 times)
+Total times of 1000 actions:
+  User time:  0.01562 s =   15.62500 ms =  15625.00000 us = 15625000.00000 ns
+System time:  0.00000 s =    0.00000 ms =      0.00000 us =       0.00000 ns
+  Real time:  0.02113 s =   21.12660 ms =  21126.60000 us = 21126600.00000 ns
+Average action time:
+  User time:  0.00002 s =    0.01562 ms =     15.62500 us =   15625.00000 ns
+System time:  0.00000 s =    0.00000 ms =      0.00000 us =       0.00000 ns
+  Real time:  0.00002 s =    0.02113 ms =     21.12600 us =   21126.00000 ns
+
+===============================================
+ Array type is: DYNAMIC
+ It consists of >>1000<< blocks and every block
+    consists of >>100<< chars.
+===============================================
+Starting time measurement of adding 1000 blocks to DYNAMIC array.
+Total times of 1000 actions:
+  User time:  0.00000 s =    0.00000 ms =      0.00000 us =       0.00000 ns
+System time:  0.00000 s =    0.00000 ms =      0.00000 us =       0.00000 ns
+  Real time:  0.00022 s =    0.22280 ms =    222.80000 us =  222800.00000 ns
+Average action time:
+  User time:  0.00000 s =    0.00000 ms =      0.00000 us =       0.00000 ns
+System time:  0.00000 s =    0.00000 ms =      0.00000 us =       0.00000 ns
+  Real time:  0.00000 s =    0.00022 ms =      0.22200 us =     222.00000 ns
+
+Starting time measurement of deleting 1000 blocks from DYNAMIC array.
+Total times of 1000 actions:
+  User time:  0.00000 s =    0.00000 ms =      0.00000 us =       0.00000 ns
+System time:  0.00000 s =    0.00000 ms =      0.00000 us =       0.00000 ns
+  Real time:  0.00005 s =    0.04780 ms =     47.80000 us =   47800.00000 ns
+Average action time:
+  User time:  0.00000 s =    0.00000 ms =      0.00000 us =       0.00000 ns
+System time:  0.00000 s =    0.00000 ms =      0.00000 us =       0.00000 ns
+  Real time:  0.00000 s =    0.00005 ms =      0.04700 us =      47.00000 ns
+
+Starting time measurement of adding and removing blocks to/from DYNAMIC array. (1000 times)
+Total times of 1000 actions:
+  User time:  0.00000 s =    0.00000 ms =      0.00000 us =       0.00000 ns
+System time:  0.00000 s =    0.00000 ms =      0.00000 us =       0.00000 ns
+  Real time:  0.00007 s =    0.06750 ms =     67.50000 us =   67500.00000 ns
+Average action time:
+  User time:  0.00000 s =    0.00000 ms =      0.00000 us =       0.00000 ns
+System time:  0.00000 s =    0.00000 ms =      0.00000 us =       0.00000 ns
+  Real time:  0.00000 s =    0.00007 ms =      0.06700 us =      67.00000 ns
+
+===============================================
+ Array type is: STATIC
+ It consists of >>1000<< blocks and every block
+    consists of >>100<< chars.
+===============================================
+Starting time measurement of adding 1000 blocks to STATIC array.
+Total times of 1000 actions:
+  User time:  0.00000 s =    0.00000 ms =      0.00000 us =       0.00000 ns
+System time:  0.00000 s =    0.00000 ms =      0.00000 us =       0.00000 ns
+  Real time:  0.00144 s =    1.44000 ms =   1440.00000 us = 1440000.00000 ns
+Average action time:
+  User time:  0.00000 s =    0.00000 ms =      0.00000 us =       0.00000 ns
+System time:  0.00000 s =    0.00000 ms =      0.00000 us =       0.00000 ns
+  Real time:  0.00000 s =    0.00144 ms =      1.44000 us =    1440.00000 ns
+
+Starting time measurement of deleting 1000 blocks from STATIC array.
+Total times of 1000 actions:
+  User time:  0.00000 s =    0.00000 ms =      0.00000 us =       0.00000 ns
+System time:  0.00000 s =    0.00000 ms =      0.00000 us =       0.00000 ns
+  Real time:  0.00002 s =    0.01580 ms =     15.80000 us =   15800.00000 ns
+Average action time:
+  User time:  0.00000 s =    0.00000 ms =      0.00000 us =       0.00000 ns
+System time:  0.00000 s =    0.00000 ms =      0.00000 us =       0.00000 ns
+  Real time:  0.00000 s =    0.00002 ms =      0.01500 us =      15.00000 ns
+
+Starting time measurement of adding and removing blocks to/from STATIC array. (1000 times)
+Total times of 1000 actions:
+  User time:  0.00000 s =    0.00000 ms =      0.00000 us =       0.00000 ns
+System time:  0.00000 s =    0.00000 ms =      0.00000 us =       0.00000 ns
+  Real time:  0.00002 s =    0.02060 ms =     20.60000 us =   20600.00000 ns
+Average action time:
+  User time:  0.00000 s =    0.00000 ms =      0.00000 us =       0.00000 ns
+System time:  0.00000 s =    0.00000 ms =      0.00000 us =       0.00000 ns
+  Real time:  0.00000 s =    0.00002 ms =      0.02000 us =      20.00000 ns
+
+===============================================
+ Array type is: DYNAMIC
+ It consists of >>1000<< blocks and every block
+    consists of >>100<< chars.
+===============================================
+Starting time measurement of searching DYNAMIC array. (10000 times)
+Search result: Block 485 is closest to block 500
+Total times of 10000 actions:
+  User time:  4.35938 s = 4359.37500 ms = 4359375.00000 us = 4359375000.00000 ns
+System time:  0.00000 s =    0.00000 ms =      0.00000 us =       0.00000 ns
+  Real time:  5.01355 s = 5013.54830 ms = 5013548.30000 us = 5013548300.00000 ns
+Average action time:
+  User time:  0.00044 s =    0.43594 ms =    435.93700 us =  435937.00000 ns
+System time:  0.00000 s =    0.00000 ms =      0.00000 us =       0.00000 ns
+  Real time:  0.00050 s =    0.50135 ms =    501.35500 us =  501355.00000 ns
+
+===============================================
+ Array type is: STATIC
+ It consists of >>1000<< blocks and every block
+    consists of >>100<< chars.
+===============================================
+Starting time measurement of searching STATIC array. (10000 times)
+Search result: Block 407 is closest to block 500
+Total times of 10000 actions:
+  User time:  4.15625 s = 4156.25000 ms = 4156250.00000 us = 4156250000.00000 ns
+System time:  0.00000 s =    0.00000 ms =      0.00000 us =       0.00000 ns
+  Real time:  4.99412 s = 4994.12300 ms = 4994123.00000 us = 4994123000.00000 ns
+Average action time:
+  User time:  0.00042 s =    0.41563 ms =    415.62500 us =  415625.00000 ns
+System time:  0.00000 s =    0.00000 ms =      0.00000 us =       0.00000 ns
+  Real time:  0.00050 s =    0.49941 ms =    499.41300 us =  499413.00000 ns
+
+Library: dynamic
+O-level: 0
+===============================================
+ Array type is: DYNAMIC
+ It consists of >>1000<< blocks and every block
+    consists of >>100<< chars.
+===============================================
+Starting measurement of DYNAMIC array creation time. (1000 times)
+Total times of 1000 actions:
+  User time:  0.06250 s =   62.50000 ms =  62500.00000 us = 62500000.00000 ns
+System time:  0.15625 s =  156.25000 ms = 156250.00000 us = 156250000.00000 ns
+  Real time:  0.25442 s =  254.41880 ms = 254418.80000 us = 254418800.00000 ns
+Average action time:
+  User time:  0.00006 s =    0.06250 ms =     62.50000 us =   62500.00000 ns
+System time:  0.00016 s =    0.15625 ms =    156.25000 us =  156250.00000 ns
+  Real time:  0.00025 s =    0.25442 ms =    254.41800 us =  254418.00000 ns
+
+===============================================
+ Array type is: STATIC
+ It consists of >>1000<< blocks and every block
+    consists of >>100<< chars.
+===============================================
+Starting measurement of STATIC array creation time. (1000 times)
+Total times of 1000 actions:
+  User time:  0.00000 s =    0.00000 ms =      0.00000 us =       0.00000 ns
+System time:  0.00000 s =    0.00000 ms =      0.00000 us =       0.00000 ns
+  Real time:  0.02050 s =   20.50210 ms =  20502.10000 us = 20502100.00000 ns
+Average action time:
+  User time:  0.00000 s =    0.00000 ms =      0.00000 us =       0.00000 ns
+System time:  0.00000 s =    0.00000 ms =      0.00000 us =       0.00000 ns
+  Real time:  0.00002 s =    0.02050 ms =     20.50200 us =   20502.00000 ns
+
+===============================================
+ Array type is: DYNAMIC
+ It consists of >>1000<< blocks and every block
+    consists of >>100<< chars.
+===============================================
+Starting time measurement of adding 1000 blocks to DYNAMIC array.
+Total times of 1000 actions:
+  User time:  0.00000 s =    0.00000 ms =      0.00000 us =       0.00000 ns
+System time:  0.00000 s =    0.00000 ms =      0.00000 us =       0.00000 ns
+  Real time:  0.00022 s =    0.21880 ms =    218.80000 us =  218800.00000 ns
+Average action time:
+  User time:  0.00000 s =    0.00000 ms =      0.00000 us =       0.00000 ns
+System time:  0.00000 s =    0.00000 ms =      0.00000 us =       0.00000 ns
+  Real time:  0.00000 s =    0.00022 ms =      0.21800 us =     218.00000 ns
+
+Starting time measurement of deleting 1000 blocks from DYNAMIC array.
+Total times of 1000 actions:
+  User time:  0.00000 s =    0.00000 ms =      0.00000 us =       0.00000 ns
+System time:  0.00000 s =    0.00000 ms =      0.00000 us =       0.00000 ns
+  Real time:  0.00005 s =    0.05250 ms =     52.50000 us =   52500.00000 ns
+Average action time:
+  User time:  0.00000 s =    0.00000 ms =      0.00000 us =       0.00000 ns
+System time:  0.00000 s =    0.00000 ms =      0.00000 us =       0.00000 ns
+  Real time:  0.00000 s =    0.00005 ms =      0.05200 us =      52.00000 ns
+
+Starting time measurement of adding and removing blocks to/from DYNAMIC array. (1000 times)
+Total times of 1000 actions:
+  User time:  0.00000 s =    0.00000 ms =      0.00000 us =       0.00000 ns
+System time:  0.00000 s =    0.00000 ms =      0.00000 us =       0.00000 ns
+  Real time:  0.00007 s =    0.06680 ms =     66.80000 us =   66800.00000 ns
+Average action time:
+  User time:  0.00000 s =    0.00000 ms =      0.00000 us =       0.00000 ns
+System time:  0.00000 s =    0.00000 ms =      0.00000 us =       0.00000 ns
+  Real time:  0.00000 s =    0.00007 ms =      0.06600 us =      66.00000 ns
+
+===============================================
+ Array type is: STATIC
+ It consists of >>1000<< blocks and every block
+    consists of >>100<< chars.
+===============================================
+Starting time measurement of adding 1000 blocks to STATIC array.
+Total times of 1000 actions:
+  User time:  0.00000 s =    0.00000 ms =      0.00000 us =       0.00000 ns
+System time:  0.00000 s =    0.00000 ms =      0.00000 us =       0.00000 ns
+  Real time:  0.00143 s =    1.43090 ms =   1430.90000 us = 1430900.00000 ns
+Average action time:
+  User time:  0.00000 s =    0.00000 ms =      0.00000 us =       0.00000 ns
+System time:  0.00000 s =    0.00000 ms =      0.00000 us =       0.00000 ns
+  Real time:  0.00000 s =    0.00143 ms =      1.43000 us =    1430.00000 ns
+
+Starting time measurement of deleting 1000 blocks from STATIC array.
+Total times of 1000 actions:
+  User time:  0.00000 s =    0.00000 ms =      0.00000 us =       0.00000 ns
+System time:  0.00000 s =    0.00000 ms =      0.00000 us =       0.00000 ns
+  Real time:  0.00001 s =    0.01230 ms =     12.30000 us =   12300.00000 ns
+Average action time:
+  User time:  0.00000 s =    0.00000 ms =      0.00000 us =       0.00000 ns
+System time:  0.00000 s =    0.00000 ms =      0.00000 us =       0.00000 ns
+  Real time:  0.00000 s =    0.00001 ms =      0.01200 us =      12.00000 ns
+
+Starting time measurement of adding and removing blocks to/from STATIC array. (1000 times)
+Total times of 1000 actions:
+  User time:  0.00000 s =    0.00000 ms =      0.00000 us =       0.00000 ns
+System time:  0.00000 s =    0.00000 ms =      0.00000 us =       0.00000 ns
+  Real time:  0.00002 s =    0.01980 ms =     19.80000 us =   19800.00000 ns
+Average action time:
+  User time:  0.00000 s =    0.00000 ms =      0.00000 us =       0.00000 ns
+System time:  0.00000 s =    0.00000 ms =      0.00000 us =       0.00000 ns
+  Real time:  0.00000 s =    0.00002 ms =      0.01900 us =      19.00000 ns
+
+===============================================
+ Array type is: DYNAMIC
+ It consists of >>1000<< blocks and every block
+    consists of >>100<< chars.
+===============================================
+Starting time measurement of searching DYNAMIC array. (10000 times)
+Search result: Block 221 is closest to block 500
+Total times of 10000 actions:
+  User time:  4.42188 s = 4421.87500 ms = 4421875.00000 us = 4421875000.00000 ns
+System time:  0.00000 s =    0.00000 ms =      0.00000 us =       0.00000 ns
+  Real time:  5.01735 s = 5017.34600 ms = 5017346.00000 us = 5017346000.00000 ns
+Average action time:
+  User time:  0.00044 s =    0.44219 ms =    442.18700 us =  442187.00000 ns
+System time:  0.00000 s =    0.00000 ms =      0.00000 us =       0.00000 ns
+  Real time:  0.00050 s =    0.50173 ms =    501.73400 us =  501734.00000 ns
+
+===============================================
+ Array type is: STATIC
+ It consists of >>1000<< blocks and every block
+    consists of >>100<< chars.
+===============================================
+Starting time measurement of searching STATIC array. (10000 times)
+Search result: Block 670 is closest to block 500
+Total times of 10000 actions:
+  User time:  4.43750 s = 4437.50000 ms = 4437500.00000 us = 4437500000.00000 ns
+System time:  0.01562 s =   15.62500 ms =  15625.00000 us = 15625000.00000 ns
+  Real time:  5.01716 s = 5017.15630 ms = 5017156.30000 us = 5017156300.00000 ns
+Average action time:
+  User time:  0.00044 s =    0.44375 ms =    443.75000 us =  443750.00000 ns
+System time:  0.00000 s =    0.00156 ms =      1.56200 us =    1562.00000 ns
+  Real time:  0.00050 s =    0.50172 ms =    501.71500 us =  501715.00000 ns
+
