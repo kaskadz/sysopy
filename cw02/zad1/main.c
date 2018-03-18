@@ -5,6 +5,24 @@
 
 int fail_on_parameter();
 
+int generate_sys(const char *, size_t, size_t);
+
+int generate_lib(const char *, size_t, size_t);
+
+int sort_sys(const char *, size_t, size_t);
+
+int sort_lib(const char *, size_t, size_t);
+
+int copy_sys(const char *, const char *, size_t, size_t);
+
+int copy_lib(const char *, const char *, size_t, size_t);
+
+int test_generate(const char *, size_t, size_t);
+
+int test_sort(const char *, size_t, size_t);
+
+int test_copy(const char *, const char *, size_t, size_t);
+
 int main(int argc, char *argv[]) {
     srand(time(NULL));
 
