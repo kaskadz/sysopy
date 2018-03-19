@@ -7,26 +7,9 @@
 #include <dlfcn.h>
 #include <sys/resource.h>
 #include "measure.h"
+#include "iocomp.h"
 
 int fail_on_parameter();
-
-int generate_sys(const char *, size_t, size_t);
-
-int generate_lib(const char *, size_t, size_t);
-
-int sort_sys(const char *, size_t, size_t);
-
-int sort_lib(const char *, size_t, size_t);
-
-int copy_sys(const char *, const char *, size_t, size_t);
-
-int copy_lib(const char *, const char *, size_t, size_t);
-
-int test_generate(const char *, size_t, size_t);
-
-int test_sort(const char *, size_t, size_t);
-
-int test_copy(const char *, const char *, size_t, size_t);
 
 int main(int argc, char *argv[]) {
     srand(time(NULL));
@@ -45,6 +28,8 @@ int main(int argc, char *argv[]) {
         b = strtoul(argv[4], NULL, 10);
 
         printf("%s: %s %zu %zu\n", command, file, r, b);
+
+        return measure_generate(file, r, b);
     } else if (strcmp(command, "sort") == 0) {
         if (argc < 5) return fail_on_parameter();
 
@@ -53,6 +38,8 @@ int main(int argc, char *argv[]) {
         b = strtoul(argv[4], NULL, 10);
 
         printf("%s: %s %zu %zu\n", command, file, r, b);
+
+        return measure_sort(file, r, b);
     } else if (strcmp(command, "copy") == 0) {
         if (argc < 6) return fail_on_parameter();
 
@@ -62,13 +49,12 @@ int main(int argc, char *argv[]) {
         b = strtoul(argv[5], NULL, 10);
 
         printf("%s: %s %s %zu %zu\n", command, file1, file2, r, b);
+
+        return measure_copy(file1, file2, r, b);
     } else {
         fprintf(stderr, "Unknown command: %s\n", command);
         return EXIT_FAILURE;
     }
-
-    printf("Hello, World!\n");
-    return EXIT_SUCCESS;
 }
 
 int fail_on_parameter() {

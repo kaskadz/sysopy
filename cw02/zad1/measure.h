@@ -1,7 +1,3 @@
-//
-// Created by Kasper on 18/03/2018.
-//
-
 #ifndef CW02_MEASURE_H
 #define CW02_MEASURE_H
 
