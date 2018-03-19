@@ -9,13 +9,19 @@
 #include "measure.h"
 #include "iocomp.h"
 
+#define ALLOC_CHECK(ptr)                                                      \
+    if ((ptr) == NULL) {                                                      \
+        printf("Memory allocation error!");                                 \
+        exit(EXIT_FAILURE);                                                   \
+    }
+
 int fail_on_parameter();
 
 int main(int argc, char *argv[]) {
     srand(time(NULL));
 
     if (argc <= 1) {
-        return fail_on_parameter();
+        exit(fail_on_parameter());
     }
 
     size_t r, b;
@@ -29,7 +35,7 @@ int main(int argc, char *argv[]) {
 
         printf("%s: %s %zu %zu\n", command, file, r, b);
 
-        return measure_generate(file, r, b);
+        exit(measure_generate(file, r, b));
     } else if (strcmp(command, "sort") == 0) {
         if (argc < 5) return fail_on_parameter();
 
@@ -39,7 +45,7 @@ int main(int argc, char *argv[]) {
 
         printf("%s: %s %zu %zu\n", command, file, r, b);
 
-        return measure_sort(file, r, b);
+        exit(measure_sort(file, r, b));
     } else if (strcmp(command, "copy") == 0) {
         if (argc < 6) return fail_on_parameter();
 
@@ -50,10 +56,10 @@ int main(int argc, char *argv[]) {
 
         printf("%s: %s %s %zu %zu\n", command, file1, file2, r, b);
 
-        return measure_copy(file1, file2, r, b);
+        exit(measure_copy(file1, file2, r, b));
     } else {
         fprintf(stderr, "Unknown command: %s\n", command);
-        return EXIT_FAILURE;
+        exit(EXIT_FAILURE);
     }
 }
 
