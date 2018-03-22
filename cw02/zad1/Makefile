@@ -28,4 +28,4 @@ test:
 	./$(PROGNAME)
 
 clean:
-	rm -f *.o *.a program program.exe
+	rm -f *.o *.a program
