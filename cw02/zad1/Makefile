@@ -6,8 +6,11 @@ PROGNAME=program
 
 all: $(PROGNAME)
 
-$(PROGNAME): main.c libmeasure.a libiocomp.a
+$(PROGNAME): main.o libiocomp.a libmeasure.a
 	$(CC) $^ -o $@ $(OPTS)
+
+main.o: main.c
+	$(CC) -c $^
 
 libiocomp.a: iocomp.o
 	ar cr $@ $^

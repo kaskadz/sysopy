@@ -33,7 +33,7 @@ int main(int argc, char *argv[]) {
         r = strtoul(argv[3], NULL, 10);
         b = strtoul(argv[4], NULL, 10);
 
-        printf("%s: %s %zu %zu\n", command, file, r, b);
+        printf("generating: %s of dimensions: %zu x %zu\n", file, r, b);
 
         exit(measure_generate(file, r, b));
     } else if (strcmp(command, "sort") == 0) {
@@ -43,9 +43,19 @@ int main(int argc, char *argv[]) {
         r = strtoul(argv[3], NULL, 10);
         b = strtoul(argv[4], NULL, 10);
 
-        printf("%s: %s %zu %zu\n", command, file, r, b);
+        printf("sorting: %s of dimensions: %zu x %zu\n", file, r, b);
 
         exit(measure_sort(file, r, b));
+    } else if (strcmp(command, "show") == 0) {
+        if (argc < 5) return fail_on_parameter();
+
+        const char *file = argv[2];
+        r = strtoul(argv[3], NULL, 10);
+        b = strtoul(argv[4], NULL, 10);
+
+        printf("showing: %s of dimensions: %zu x %zu\n", file, r, b);
+
+        exit(show(file, r, b));
     } else if (strcmp(command, "copy") == 0) {
         if (argc < 6) return fail_on_parameter();
 
@@ -54,7 +64,7 @@ int main(int argc, char *argv[]) {
         r = strtoul(argv[4], NULL, 10);
         b = strtoul(argv[5], NULL, 10);
 
-        printf("%s: %s %s %zu %zu\n", command, file1, file2, r, b);
+        printf("copying: %s to %s dimension: %zu x %zu\n", file1, file2, r, b);
 
         exit(measure_copy(file1, file2, r, b));
     } else {
