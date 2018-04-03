@@ -1,0 +1,8 @@
+pwd
+ls
+
+
+ps aux
+xD koniec
+
+mkdir nie_bedzie_tego

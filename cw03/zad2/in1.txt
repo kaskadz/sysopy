@@ -1,0 +1,6 @@
+ls -Al
+
+/mnt/c/Users/Kasper/Archlinux/sysopy/cw03/zad2/program in2.txt
+hehehe 123 abc def ghi
+ls
+pwd
