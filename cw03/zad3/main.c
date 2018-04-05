@@ -197,12 +197,11 @@ int main(int argc, char *argv[]) {
                             exit(EXIT_FAILURE);
                         }
                     } else if (WIFSIGNALED(status)) {
-                        perror("Child process ended because of an uncaught signal: ");
+                        fprintf(stderr, "Child process ended because of an uncaught signal: %d\n", WTERMSIG(status));
                         if (WCOREDUMP(status)) {
                             fprintf(stderr, "Core dumped :(\n");
                         }
-                    } else if (WIFSTOPPED(status))
-                        perror("Child process has stopped: ");
+                    }
                 }
             } while (end_id == 0);
         }
