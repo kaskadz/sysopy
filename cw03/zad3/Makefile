@@ -17,3 +17,9 @@ test:
 
 clean:
 	rm -f *.o program
+
+cpu_hooligan: cpu_hooligan.c
+	$(CC) -o $@ $^
+
+mem_hooligan: mem_hooligan.c
+	$(CC) -o $@ $^
