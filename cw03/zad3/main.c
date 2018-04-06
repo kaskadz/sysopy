@@ -40,7 +40,7 @@ void show_start_msg(size_t line_no, char *task_name, rlim_t cpu_lim, rlim_t mem_
     );
 }
 
-void show_times(char *name, struct rusage *begin, struct rusage *end) {
+void show_times(struct rusage *begin, struct rusage *end) {
     time_t u_time =
             (end->ru_utime.tv_sec - begin->ru_utime.tv_sec) * 1000000 + end->ru_utime.tv_usec - begin->ru_utime.tv_usec;
     time_t s_time =
@@ -74,7 +74,6 @@ void limit_res(int type, rlim_t value) {
 char **make_args(char *line, size_t *param_qtty, rlim_t *cpu_limit, rlim_t *mem_limit) {
     char **args = NULL;
     *param_qtty = 0;
-    size_t flag = 0;
     char *token = strtok(line, DELIM);
 
     args = realloc(args, sizeof(char *) * ++(*param_qtty));
@@ -166,7 +165,7 @@ int main(int argc, char *argv[]) {
             // set cpu limit
             limit_res(RLIMIT_CPU, cpu_limit);
             // set mem limit
-            limit_res(RLIMIT_AS, mem_limit * 1000000);
+            limit_res(RLIMIT_AS, mem_limit * 1024 * 1024);
             // execute
             if (execvp(args[0], args) < 0) {
                 perror("Exec error");
@@ -192,7 +191,11 @@ int main(int argc, char *argv[]) {
                         if (exit_status != 0) {
                             fprintf(
                                     stderr,
-                                    "Execution of line %zu (%s) failed! Exit status: %d\n",
+                                    BCYN
+                                    BLK
+                                    "Execution of line %zu (%s) failed! Exit status: %d"
+                                    RESET
+                                    "\n",
                                     line_no,
                                     args[0],
                                     exit_status
@@ -202,7 +205,15 @@ int main(int argc, char *argv[]) {
                             exit(EXIT_FAILURE);
                         }
                     } else if (WIFSIGNALED(status)) {
-                        fprintf(stderr, "Child process ended because of an uncaught signal: %d\n", WTERMSIG(status));
+                        fprintf(
+                                stderr,
+                                BMAG
+                                BLK
+                                "Child process ended because of an uncaught signal: %d"
+                                RESET
+                                "\n",
+                                WTERMSIG(status)
+                        );
                         if (WCOREDUMP(status)) {
                             fprintf(stderr, "Core dumped :c\n");
                         }
@@ -213,7 +224,7 @@ int main(int argc, char *argv[]) {
 
         // timing
         getrusage(RUSAGE_CHILDREN, &ru_end);
-        show_times(args[0], &ru_begin, &ru_end);
+        show_times(&ru_begin, &ru_end);
 
         free(args);
     }
