@@ -18,7 +18,7 @@ if (line) free(line);   \
 fclose(file);           \
 }
 
-void show_start_msg(size_t line_no, char *task_name) {
+void show_start_msg(size_t line_no, char *task_name, rlim_t cpu_lim, rlim_t mem_lim) {
     printf(
             GRN
             BOLD
@@ -26,12 +26,17 @@ void show_start_msg(size_t line_no, char *task_name) {
             YEL
             "Starting execution of task from line %zu.\n"
             "\"%s\"\n"
+            "With restrictions:\n"
+            "\t-> on cpu time: %zu [s]\n"
+            "\t-> on memory usage: %zu [MB]\n"
             GRN
             "----------------------------------------"
             RESET
             "\n",
             line_no,
-            task_name
+            task_name,
+            cpu_lim,
+            mem_lim
     );
 }
 
@@ -59,14 +64,14 @@ void show_times(char *name, struct rusage *begin, struct rusage *end) {
 
 void limit_res(int type, rlim_t value) {
     struct rlimit rlim;
-    rlim.rlim_cur = rlim.rlim_max = (rlim_t) value;
+    rlim.rlim_cur = rlim.rlim_max = value;
     if (setrlimit(type, &rlim) == -1) {
         perror("Setrlimit error (CPU)");
         exit(EXIT_FAILURE);
     }
 }
 
-char **make_args(char *line, size_t *param_qtty, size_t *cpu_limit, size_t *mem_limit) {
+char **make_args(char *line, size_t *param_qtty, rlim_t *cpu_limit, rlim_t *mem_limit) {
     char **args = NULL;
     *param_qtty = 0;
     size_t flag = 0;
@@ -138,8 +143,8 @@ int main(int argc, char *argv[]) {
 //        printf("%s", line);
 
         size_t param_qtty;
-        size_t cpu_limit;
-        size_t mem_limit;
+        rlim_t cpu_limit;
+        rlim_t mem_limit;
         char **args = make_args(line, &param_qtty, &cpu_limit, &mem_limit);
         if (args == NULL) {
             //free..
@@ -148,7 +153,7 @@ int main(int argc, char *argv[]) {
             exit(EXIT_FAILURE);
         }
 
-        show_start_msg(line_no, args[0]);
+        show_start_msg(line_no, args[0], cpu_limit, mem_limit);
 
         // timing
         struct rusage ru_begin, ru_end;
