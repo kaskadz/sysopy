@@ -199,7 +199,7 @@ int main(int argc, char *argv[]) {
                     } else if (WIFSIGNALED(status)) {
                         fprintf(stderr, "Child process ended because of an uncaught signal: %d\n", WTERMSIG(status));
                         if (WCOREDUMP(status)) {
-                            fprintf(stderr, "Core dumped :(\n");
+                            fprintf(stderr, "Core dumped :c\n");
                         }
                     }
                 }
