@@ -6,15 +6,60 @@
 #include <sys/wait.h>
 #include <sys/types.h>
 
+#include "rainbow.h"
+
+#define DELIM " \n"
+
+#define PREEXIT_FREE() {\
+free(args);             \
+if (line) free(line);   \
+fclose(file);           \
+}
+
+void show_start_msg(size_t line_no, char *task_name) {
+    printf(
+            GRN
+            BOLD
+            ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n"
+            YEL
+            "Starting execution of task from line %zu.\n"
+            "\"%s\"\n"
+            GRN
+            "----------------------------------------"
+            RESET
+            "\n",
+            line_no,
+            task_name
+    );
+}
+
+void show_end_msg() {
+    printf(
+            RED
+            BOLD
+            "----------------------------------------\n"
+            "End of task execution\n"
+            RED
+            "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<"
+            RESET
+            "\n"
+    );
+}
+
 char **make_args(char *line, size_t *param_qtty) {
     char **args = NULL;
     *param_qtty = 0;
-    char *token = strtok(line, " \n");
+    char *token = strtok(line, DELIM);
     while (token) {
         args = realloc(args, sizeof(char *) * ++(*param_qtty));
-        if (args == 0) exit(EXIT_FAILURE);
-        else args[(*param_qtty) - 1] = token;
-        token = strtok(NULL, " \n");
+        if (args == 0) {
+            perror("Memory reallocation error");
+            free(args);
+            return NULL;
+        } else {
+            args[(*param_qtty) - 1] = token;
+        }
+        token = strtok(NULL, DELIM);
     }
     args = realloc(args, sizeof(char *) * ++(*param_qtty));
     args[(*param_qtty) - 1] = NULL;
@@ -46,7 +91,14 @@ int main(int argc, char *argv[]) {
 
         size_t param_qtty;
         char **args = make_args(line, &param_qtty);
+        if(args == NULL) {
+            if (line) free(line);
+            fclose(file);
+            exit(EXIT_FAILURE);
+        }
         if (param_qtty < 2) continue;
+
+        show_start_msg(line_no, args[0]);
 
         pid_t pid;
         pid = fork();
@@ -58,6 +110,7 @@ int main(int argc, char *argv[]) {
             }
         } else if (pid == -1) {
             perror("Fork error: ");
+            PREEXIT_FREE();
             exit(EXIT_FAILURE);
         } else {
 //            parent's work
@@ -67,6 +120,7 @@ int main(int argc, char *argv[]) {
                 end_id = waitpid(pid, &status, WNOHANG | WUNTRACED);
                 if (end_id == -1) {
                     perror("Waitpid error: ");
+                    PREEXIT_FREE();
                     exit(EXIT_FAILURE);
                 } else if (end_id == pid) {
                     if (WIFEXITED(status)) {
@@ -74,23 +128,38 @@ int main(int argc, char *argv[]) {
                         if (exit_status != 0) {
                             fprintf(
                                     stderr,
-                                    "Execution of line %zu (%s) failed! Exit status: %d\n",
+                                    BCYN
+                                    BLK
+                                    "Execution of line %zu (%s) failed! Exit status: %d"
+                                    RESET
+                                    "\n",
                                     line_no,
                                     args[0],
                                     exit_status
                             );
+                            PREEXIT_FREE();
                             exit(EXIT_FAILURE);
                         }
                     } else if (WIFSIGNALED(status)) {
-                        perror("Child process ended because of an uncaught signal: ");
+                        fprintf(
+                                stderr,
+                                BMAG
+                                BLK
+                                "Child process ended because of an uncaught signal: %d"
+                                RESET
+                                "\n",
+                                WTERMSIG(status)
+                        );
                         if (WCOREDUMP(status)) {
-                            fprintf(stderr, "Core dumped :(\n");
+                            fprintf(stderr, "Core dumped :c\n");
                         }
-                    } else if (WIFSTOPPED(status))
-                        perror("Child process has stopped: ");
+                    }
                 }
             } while (end_id == 0);
         }
+
+        show_end_msg();
+
         free(args);
     }
     if (line) free(line);
