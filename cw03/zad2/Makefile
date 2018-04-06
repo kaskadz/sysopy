@@ -10,7 +10,7 @@ $(PROGNAME): main.o
 	$(CC) $^ -o $@ $(OPTS)
 
 main.o: main.c
-	$(CC) -c $^
+	$(CC) -c $^ $(OPTS)
 
 test:
 	./$(PROGNAME)
