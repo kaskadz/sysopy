@@ -1,1 +1,5 @@
-./cpu_hooligan 1 100
+ls 100 1000 -Al
+
+pwd 10 12
+ls 998 997
+pwd 777 888

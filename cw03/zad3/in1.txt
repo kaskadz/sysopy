@@ -1,6 +1,0 @@
-ls 100 1000 -Al
-
-pwd 10 12
-hehehe 123 987 abc def ghi
-ls 998 997
-pwd 777 888
