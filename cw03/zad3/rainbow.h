@@ -15,14 +15,14 @@
 #define WHT     "\x1B[37m"
 
 //bg colors
-#define BBLK    "\x1B[40m]"
-#define BRED    "\x1B[41m]"
-#define BGRN    "\x1B[42m]"
-#define BYEL    "\x1B[43m]"
-#define BBLU    "\x1B[44m]"
-#define BMAG    "\x1B[45m]"
-#define BCYN    "\x1B[46m]"
-#define BWHY    "\x1B[47m]"
+#define BBLK    "\x1B[40m"
+#define BRED    "\x1B[41m"
+#define BGRN    "\x1B[42m"
+#define BYEL    "\x1B[43m"
+#define BBLU    "\x1B[44m"
+#define BMAG    "\x1B[45m"
+#define BCYN    "\x1B[46m"
+#define BWHY    "\x1B[47m"
 
 //other
 #define BOLD    "\x1B[1m"
