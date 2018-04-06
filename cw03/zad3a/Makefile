@@ -2,7 +2,7 @@ CC=gcc
 OPTS=-Wall -Wextra
 PROGNAME=program
 
-.PHONY: clean
+.PHONY: clean test
 
 all: $(PROGNAME)
 
@@ -11,6 +11,9 @@ $(PROGNAME): main.o rainbow.h
 
 main.o: main.c
 	$(CC) -c $^ $(OPTS)
+
+test:
+	./$(PROGNAME) in.txt
 
 clean:
 	rm -f *.o $(PROGNAME)

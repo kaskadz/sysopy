@@ -15,7 +15,7 @@ int main(int argc, char **argv) {
     printf("blocks: %zu\nsize: %zu\n", blocks, size);
     size_t total = 0;
     char *block;
-    int i;
+    size_t i;
     for (i = 0; i < blocks; ++i) {
         printf("Allocating %zu MiB for a total of %zu MiB.\n", size, total + size);
         block = malloc(size * 1024 * 1024);

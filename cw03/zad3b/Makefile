@@ -2,7 +2,7 @@ CC=gcc
 OPTS=-Wall -Wextra
 PROGNAME=program
 
-.PHONY: clean
+.PHONY: clean test test_cpu test_mem
 
 all: $(PROGNAME) cpu_hooligan mem_hooligan
 
@@ -20,3 +20,12 @@ cpu_hooligan: cpu_hooligan.c
 
 mem_hooligan: mem_hooligan.c
 	$(CC) -o $@ $^ $(OPTS)
+
+test:
+	./$(PROGNAME) in.txt
+
+test_cpu:
+	./$(PROGNAME) cpu_limit_failure.txt
+
+test_mem:
+	./$(PROGNAME) mem_limit_failure.txt

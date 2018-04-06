@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <math.h>
 
-int main(int argc, char** argv) {
+int main() {
     double x = 3.1415926;
     double y = -10101;
     int i, j;
