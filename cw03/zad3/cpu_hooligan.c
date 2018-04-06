@@ -1,14 +1,18 @@
+#include <stdlib.h>
 #include <stdio.h>
-#include <limits.h>
+#include <math.h>
 
-int main() {
-    short a = 0;
-    short dir = 1;
-    printf("Doing cpu hooliganism...\n");
-    while (1) {
-        if (a == SHRT_MIN || a == SHRT_MAX) {
-            dir *= -1;
+int main(int argc, char** argv) {
+    double x = 3.1415926;
+    double y = -10101;
+    int i, j;
+    printf("Starting calculation...\n");
+    for (i = 0; i < 100000; ++i) {
+        for (j = 0; j < 100000; ++j) {
+            x = sin(y);
+            y = sin(x);
         }
-        a += dir;
     }
+    printf("After plenty of meaningful calculations the result proudly carries value of: %lf.\n", x);
+    return 0;
 }

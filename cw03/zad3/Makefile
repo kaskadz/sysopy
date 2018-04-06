@@ -4,7 +4,7 @@ PROGNAME=program
 
 .PHONY: clean
 
-all: $(PROGNAME)
+all: $(PROGNAME) cpu_hooligan mem_hooligan
 
 $(PROGNAME): main.o rainbow.h
 	$(CC) $^ -o $@ $(OPTS)
@@ -16,10 +16,10 @@ test:
 	./$(PROGNAME)
 
 clean:
-	rm -f *.o program
+	rm -f *.o $(PROGNAME) cpu_hooligan mem_hooligan
 
 cpu_hooligan: cpu_hooligan.c
-	$(CC) -o $@ $^
+	$(CC) -o $@ $^ -lm
 
 mem_hooligan: mem_hooligan.c
 	$(CC) -o $@ $^
