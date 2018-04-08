@@ -5,6 +5,8 @@
 #include <sys/types.h>
 #include <unistd.h>
 
+#include "rainbow.h"
+
 #define TRUE 1
 #define FALSE 0
 
@@ -40,7 +42,12 @@ void handleTSTP(int signum) {
     } else {
         // kill child
         end_child();
-        printf("Oczekuję na CTRL+Z - kontynuacja albo CTR+C - zakonczenie programu\n");
+        printf(
+                YEL
+                "Oczekuję na CTRL+Z - kontynuacja albo CTR+C - zakonczenie programu"
+                RESET
+                "\n"
+        );
         sigset_t mask;
         sigfillset(&mask);
         sigdelset(&mask, SIGINT);
@@ -52,7 +59,12 @@ void handleTSTP(int signum) {
 void handleINT(int signum) {
     // kill a child
     end_child();
-    printf("Odebrano sygnał SIGINT\n");
+    printf(
+            RED
+            "Odebrano sygnał SIGINT"
+            RESET
+            "\n"
+    );
     exit(EXIT_SUCCESS);
 }
 
