@@ -7,9 +7,6 @@
 
 #include "rainbow.h"
 
-#define TRUE 1
-#define FALSE 0
-
 pid_t pid;
 sig_atomic_t isChildRunning;
 sig_atomic_t hasAChild;
@@ -25,14 +22,14 @@ void start_child() {
         exit(EXIT_FAILURE);
     } else {
         // report that child is running
-        isChildRunning = TRUE;
+        isChildRunning = true;
     }
 }
 
 void end_child() {
     kill(pid, SIGKILL);
     // report that child is not running
-    isChildRunning = FALSE;
+    isChildRunning = false;
 }
 
 void handleTSTP(int signum) {
