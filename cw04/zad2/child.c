@@ -29,6 +29,7 @@ int main(void) {
 
     signal(SIGALRM, &handler);
 
+    // sleep and send request
     sleep(delay);
     kill(getppid(), SIGUSR1);
 
