@@ -14,6 +14,7 @@
 
 #include "rainbow.h"
 
+// debug toggling macros
 #define D_SPAWN
 #define D_SIGRT
 #define D_CHLD
@@ -23,33 +24,34 @@
 int N;
 int K;
 
-sig_atomic_t request_counter = 0;
-sig_atomic_t alive_children_counter = 0;
+sig_atomic_t request_counter = 0; // number of submitted requests
+sig_atomic_t alive_children_counter = 0; // number of living children
 
 pid_t *children = NULL; // pids of children
 bool *permission_granted = NULL; // start requests
 
-void kinder_mache();
+void kinder_mache(); // bring children to life
 
-int get_child_id(pid_t pid);
+int get_child_id(pid_t pid); // get child id by pid
 
-pid_t make_child(void);
+pid_t make_child(void); // bring child to life
 
-void define_signal_handling();
+void define_signal_handling(); // define handlers
 
-void send_allow(pid_t child);
+void send_allow(pid_t child); // send info to a child
 
-void allow_all(void);
+void allow_all(void); // send info to all children with permission
 
+// signal handlers
 void request_handler(int signal, siginfo_t *info, void *ucontext);
 
 void sigchld_handler(int signal, siginfo_t *info, void *ucontext);
 
 void rt_handler(int signal, siginfo_t *info, void *ucontext);
 
-//void sigint_handler(int signal, siginfo_t *info, void *ucontext) ;
 void sigint_handler(void);
 
+// main
 int main(int argc, char **argv) {
 
     // Parse command line
@@ -70,23 +72,25 @@ int main(int argc, char **argv) {
         fprintf(stderr, "N should be GTE M\n");
         exit(EXIT_FAILURE);
     }
-    // End of parsing
 
     children = calloc(N, sizeof(pid_t));
     permission_granted = calloc(N, sizeof(bool));
 
     define_signal_handling();
 
+    // actual work
     kinder_mache();
 
     while (alive_children_counter > 0);
 
+    // cleaning
     free(children);
     free(permission_granted);
 
     exit(EXIT_SUCCESS);
 }
 
+// function definitions
 pid_t make_child(void) {
     pid_t pid = fork();
     if (pid == 0) {
@@ -144,7 +148,7 @@ void allow_all(void) {
 void send_allow(pid_t child) {
 #ifdef D_ALLOWS
     printf("%d (%3d): Sending confirmation\n", child, get_child_id(child));
-#endif
+#endif // D_ALLOWS
     kill(child, SIGALRM);
 }
 
@@ -157,7 +161,7 @@ void request_handler(int signal, siginfo_t *info, void *ucontext) {
 
 #ifdef D_REQUEST
     printf("%d (%3d): Requested permission\n", caller, childnum);
-#endif
+#endif // D_REQUEST
 
     if (!permission_granted[childnum]) {
         ++request_counter;
