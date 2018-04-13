@@ -178,7 +178,7 @@ void request_handler(int signal, siginfo_t *info, void *ucontext) {
 
 void sigchld_handler(int signal, siginfo_t *info, void *ucontext) {
     assert(signal == SIGCHLD);
-    (void) ucontext; // unused
+    (void) ucontext;
 
     int left = --alive_children_counter;
     int status = info->si_status;
