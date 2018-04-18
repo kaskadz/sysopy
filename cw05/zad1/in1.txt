@@ -1,0 +1,3 @@
+ls -Al | ls | pwd
+
+echo abc
