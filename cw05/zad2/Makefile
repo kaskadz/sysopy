@@ -37,4 +37,4 @@ test_teardown:
 	@rm pipe_one
 
 clean:
-	rm -f *.o master slave
+	rm -f *.o master slave pipe_one
