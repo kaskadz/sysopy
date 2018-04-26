@@ -15,17 +15,17 @@
 
 // - |MACROS| ---------------------------- //
 #define PERR_EXIT(_MSG_) {              \
-perror( RED _MSG_ RESET );              \
+perror( "[" GRN "Server" RESET "]" RED _MSG_ RESET );              \
 exit(EXIT_FAILURE);                     \
 }
 
-#define ERR_EXIT(_MSG_, ...) {                          \
-fprintf(stderr, RED _MSG_ RESET "\n", ##__VA_ARGS__);   \
-exit(EXIT_FAILURE);                                     \
+#define ERR_EXIT(_MSG_, ...) {                                          \
+fprintf(stderr, "[" GRN "Server" RESET "][" RED "ERROR" RESET "] " _MSG_ "\n", ##__VA_ARGS__);  \
+exit(EXIT_FAILURE);                                                     \
 }
 
-#define WARNING(_MSG_, ...) { fprintf(stdout, YEL _MSG_ RESET "\n", ##__VA_ARGS__ ); }
-#define INFO(_MSG_, ...) { fprintf(stdout, CYN _MSG_ RESET "\n", ##__VA_ARGS__ ); }
+#define WARNING(_MSG_, ...) { fprintf(stdout, "[" GRN "Server" RESET "][" YEL "WARNING" RESET "] " _MSG_ "\n", ##__VA_ARGS__ ); }
+#define INFO(_MSG_, ...) { fprintf(stdout, "[" GRN "Server" RESET "][" CYN "INFO" RESET "] " _MSG_ "\n", ##__VA_ARGS__ ); }
 
 
 // - |GLOBAL VARIABLES| ------------------ //
@@ -65,6 +65,8 @@ int calc(char op[4], int arg1, int arg2);
 
 // - |MAIN| ------------------------------ //
 int main() {
+    setup();
+
     receive_loop();
 
     exit(EXIT_SUCCESS);
@@ -73,15 +75,18 @@ int main() {
 
 // - |UTILITIES| ------------------------- //
 void setup() {
+    INFO("Setting up..");
     if (atexit(cleanup) == -1) PERR_EXIT("Error registering exit handler");
+    if (signal(SIGINT, &sigint_handler) == SIG_ERR) PERR_EXIT("Error registering SIGINT handler");
 
-    char *pwd = getenv("HOME");
-    if (pwd == NULL) PERR_EXIT("Error getting HOME env variable");
 
-    key_t public_key = ftok(pwd, PROJECT_ID);
+    char *home = getenv("HOME");
+    if (home == NULL) PERR_EXIT("Error getting HOME env variable");
+
+    key_t public_key = ftok(home, PROJECT_ID);
     if (public_key == -1) PERR_EXIT("Public key generation failed");
 
-    server_queue_id = msgget(public_key, IPC_CREAT | IPC_EXCL | 0666);
+    server_queue_id = msgget(public_key, IPC_CREAT | 0644u);
     if (server_queue_id == -1) PERR_EXIT("Public queue generation failed");
 
     for (int i = 0; i < MAX_CLIENTS; ++i) {
@@ -91,21 +96,25 @@ void setup() {
 }
 
 void cleanup() {
+    INFO("Cleaning up..");
     if (msgctl(server_queue_id, IPC_RMID, NULL) < 0) {
         PERR_EXIT("Queue deletion failed");
     }
 }
 
 void sigint_handler(int signal) {
+    INFO("Received sigint :P");
     assert(signal == SIGINT);
     exit(2);
 }
 
 void receive_loop() {
+    INFO("Entering receiving loop..");
     Msg msg;
     ssize_t read;
 
     while ((read = msgrcv(server_queue_id, &msg, MSG_SIZE, 0, 0)) != -1) {
+        INFO("Received a message!");
         int client_id = msg.id;
         if (msg.msg_type == SIGNUP) {
             h_signup(&msg);
@@ -136,12 +145,14 @@ void receive_loop() {
                 );
             }
         }
+        INFO("Here we go again...");
     }
 }
 
 
 // - |REQUEST HANDLERS| ------------------ //
 void h_mirror(Msg *msg) {
+    INFO("Handling MIRROR message");
     int len = strlen(msg->contents);
 
     Msg resp;
@@ -159,6 +170,7 @@ void h_mirror(Msg *msg) {
 }
 
 void h_calc(Msg *msg) {
+    INFO("Handling CALC message");
     char op[4];
     int arg1 = 0;
     int arg2 = 0;
@@ -178,6 +190,7 @@ void h_calc(Msg *msg) {
 }
 
 void h_time(Msg *msg) {
+    INFO("Handling TIME message");
     Msg resp;
     resp.msg_type = CALC;
     resp.id = SERVER_ID;
@@ -193,10 +206,12 @@ void h_time(Msg *msg) {
 }
 
 void h_end(Msg *msg) {
+    INFO("Handling END message");
     INFO("END message received from client: (id, pid) = (%d, %d)", msg->id, client_pids[msg->id]);
 }
 
 void h_stop(Msg *msg) {
+    INFO("Handling STOP message");
 //    msgctl(client_queues[msg->id], IPC_RMID, NULL);
     client_queues[msg->id] = -1;
     client_pids[msg->id] = -1;
@@ -204,16 +219,12 @@ void h_stop(Msg *msg) {
 }
 
 void h_signup(Msg *msg) {
-    assert(msg->id = -1);
+    INFO("Handling SIGNUP message");
+    assert(msg->id == -1);
 
-    key_t client_key;
-    if (sscanf(msg->contents, "%d", &client_key) < 0) {
-        ERR_EXIT("Error reading client key: %s", msg->contents);
-    }
-
-    int client_queue_id = msgget(client_key, 0);
-    if (client_queue_id == -1) {
-        ERR_EXIT("Error opening client's queue");
+    int client_queue_id;
+    if (sscanf(msg->contents, "%d", &client_queue_id) < 0) {
+        ERR_EXIT("Error reading client's queue key: %s", msg->contents);
     }
 
     if (client_count >= MAX_CLIENTS) {
@@ -221,6 +232,8 @@ void h_signup(Msg *msg) {
     } else {
         client_pids[client_count] = msg->pid;
         client_queues[client_count] = client_queue_id;
+
+        INFO("Registered new client: (pid, id) = (%d, %d)", msg->pid, client_count);
 
         Msg resp;
         resp.msg_type = SIGNUP;
@@ -232,6 +245,7 @@ void h_signup(Msg *msg) {
         if (msgsnd(client_queues[client_count], &resp, MSG_SIZE, 0) < 0) {
             PERR_EXIT("Error sending client's id");
         }
+        INFO("Register response sent to client");
         ++client_count;
     }
 }
@@ -254,6 +268,7 @@ int calc(char op[4], int arg1, int arg2) {
 }
 
 char *fetch_date() {
+    INFO("Getting date...");
     FILE *pipe = popen("date", "r");
 
     char *line = NULL;
