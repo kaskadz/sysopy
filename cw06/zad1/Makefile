@@ -3,7 +3,7 @@ OPTS=-Wall -Wextra
 SERVER=server
 CLIENT=client
 
-.PHONY: clean
+.PHONY: clean show_q clean_q
 
 all: $(SERVER) $(CLIENT)
 
@@ -18,6 +18,12 @@ server.o: server.c protocol.h rainbow.h
 
 client.o: client.c
 	$(CC) -c $^ $(OPTS)
+
+show_q:
+	@./show_queues.sh
+
+clean_q:
+	@./rm_queues.sh
 
 clean:
 	rm -f *.o $(SERVER) $(CLIENT)
