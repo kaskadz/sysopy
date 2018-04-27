@@ -15,17 +15,17 @@
 
 // - |MACROS| ---------------------------- //
 #define PERR_EXIT(_MSG_) {              \
-perror( "[" GRN "Server" RESET "]" RED _MSG_ RESET );              \
+perror( "[" MAG "Server" RESET "][" RED "PERROR" RESET "]" _MSG_ );              \
 exit(EXIT_FAILURE);                     \
 }
 
 #define ERR_EXIT(_MSG_, ...) {                                          \
-fprintf(stderr, "[" GRN "Server" RESET "][" RED "ERROR" RESET "] " _MSG_ "\n", ##__VA_ARGS__);  \
+fprintf(stderr, "[" MAG "Server" RESET "][" RED "ERROR" RESET "] " _MSG_ "\n", ##__VA_ARGS__);  \
 exit(EXIT_FAILURE);                                                     \
 }
 
-#define WARNING(_MSG_, ...) { fprintf(stdout, "[" GRN "Server" RESET "][" YEL "WARNING" RESET "] " _MSG_ "\n", ##__VA_ARGS__ ); }
-#define INFO(_MSG_, ...) { fprintf(stdout, "[" GRN "Server" RESET "][" CYN "INFO" RESET "] " _MSG_ "\n", ##__VA_ARGS__ ); }
+#define WARNING(_MSG_, ...) { fprintf(stdout, "[" MAG "Server" RESET "][" YEL "WARNING" RESET "] " _MSG_ "\n", ##__VA_ARGS__ ); }
+#define INFO(_MSG_, ...) { fprintf(stdout, "[" MAG "Server" RESET "][" CYN "INFO" RESET "] " _MSG_ "\n", ##__VA_ARGS__ ); }
 
 
 // - |GLOBAL VARIABLES| ------------------ //
@@ -119,8 +119,10 @@ void receive_loop() {
         if (msg.msg_type == SIGNUP) {
             h_signup(&msg);
         } else {
-            assert(client_id < MAX_CLIENTS);
-            assert(client_pids[client_id] == msg.pid);
+            if (client_id >= MAX_CLIENTS) ERR_EXIT("Exceeded number of registered clients");
+            if (client_pids[client_id] != msg.pid) {
+                WARNING("Received message from unregistered client");
+            }
             switch (msg.msg_type) {
                 case MIRROR:
                     h_mirror(&msg);
@@ -145,7 +147,6 @@ void receive_loop() {
                 );
             }
         }
-        INFO("Here we go again...");
     }
 }
 
@@ -163,10 +164,13 @@ void h_mirror(Msg *msg) {
     for (int i = 0; i < len; ++i) {
         resp.contents[i] = msg->contents[len - 1 - i];
     }
+    resp.contents[len] = '\0';
 
     if (msgsnd(client_queues[msg->id], &resp, MSG_SIZE, 0) < 0) {
         PERR_EXIT("Error responding to MIRROR request");
     }
+
+    memset(msg->contents, 0, CONTENTS_SIZE);
 }
 
 void h_calc(Msg *msg) {
@@ -212,10 +216,9 @@ void h_end(Msg *msg) {
 
 void h_stop(Msg *msg) {
     INFO("Handling STOP message");
-//    msgctl(client_queues[msg->id], IPC_RMID, NULL);
+    INFO("Unregistering client: (id, pid) = (%d, %d)", msg->id, msg->pid);
     client_queues[msg->id] = -1;
     client_pids[msg->id] = -1;
-    // anything else?!
 }
 
 void h_signup(Msg *msg) {
@@ -268,7 +271,7 @@ int calc(char op[4], int arg1, int arg2) {
 }
 
 char *fetch_date() {
-    INFO("Getting date...");
+//    INFO("Getting date...");
     FILE *pipe = popen("date", "r");
 
     char *line = NULL;

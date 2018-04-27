@@ -15,6 +15,8 @@
 
 
 // - |MACROS| ---------------------------- //
+#define PROMPT_CHAR '>'
+
 #define PERR_EXIT(_MSG_) {              \
 perror( "[" GRN "Client" RESET "]" RED _MSG_ RESET );              \
 exit(EXIT_FAILURE);                     \
@@ -31,6 +33,7 @@ exit(EXIT_FAILURE);                                     \
 int client_queue_id = -1;
 int server_queue_id = -1;
 int client_id = -1;
+int display_prompt = 0;
 
 // - |FUNCTION DECLARATIONS| ------------- //
 void setup();
@@ -66,6 +69,7 @@ int main(int argc, char *argv[]) {
     if (argc == 1) {
         file = stdin;
         INFO("Using stdin as input");
+        display_prompt = 1;
     } else if (argc <= 2) {
         file = fopen(argv[1], "r");
         INFO("Using %s as input", argv[1]);
@@ -81,6 +85,7 @@ int main(int argc, char *argv[]) {
     char *line = NULL;
     size_t len = 0;
     ssize_t read;
+    if (display_prompt) printf("%c ", PROMPT_CHAR);
     while ((read = getline(&line, &len, file)) != -1) {
         // copy line buffer contents
         char *line_copy = calloc(read + 1, sizeof(char));
@@ -95,6 +100,7 @@ int main(int argc, char *argv[]) {
                 if (content == NULL) {
                     WARNING("MIRROR received wrong argumets!");
                 } else {
+                    INFO("Mirroring %s", content);
                     send_mirror(content);
                     free(content);
                 }
@@ -119,12 +125,17 @@ int main(int argc, char *argv[]) {
             send_stop();
         } else if (strcmp(elems[0], "END") == 0) {
             send_end();
+        } else if (strcmp(elems[0], "TERM") == 0) {
+            break;
         } else {
             WARNING("Unknown command: '%s'", elems[0]);
         }
         free(line_copy);
         free(elems);
+        if (display_prompt) printf("%c ", PROMPT_CHAR);
     }
+
+    send_stop();
 
     free(line);
 
@@ -198,6 +209,7 @@ void send_mirror(char *str) {
             .pid = getpid(),
             .msg_type = MIRROR,
     };
+    --len;
     memcpy(msg.contents, str, (len > CONTENTS_SIZE) ? CONTENTS_SIZE : len);
 
     if (msgsnd(server_queue_id, &msg, MSG_SIZE, 0) < 0) {
