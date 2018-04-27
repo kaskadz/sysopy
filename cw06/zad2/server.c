@@ -252,6 +252,9 @@ void h_signup(Msg *msg) {
     } else {
         client_pids[client_count] = msg->pid;
         client_queues[client_count] = mq_open(msg->contents, O_WRONLY);;
+        if (client_queues[client_count] < 0) {
+            PERR_EXIT("Error opening client's queue");
+        }
 
         INFO("Registered new client: (pid, id) = (%d, %d)", msg->pid, client_count);
 

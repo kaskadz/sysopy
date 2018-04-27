@@ -17,6 +17,7 @@
 #include <unistd.h>
 #include <mqueue.h>
 #include <fcntl.h>
+#include <time.h>
 
 #include "rainbow.h"
 #include "protocol.h"
@@ -153,6 +154,7 @@ int main(int argc, char *argv[]) {
 // - |UTILITIES| ------------------------- //
 void setup() {
     INFO("Setting up..");
+    srand(time(NULL)*getpid());
     if (atexit(cleanup) == -1) PERR_EXIT("Error registering exit handler");
     if (signal(SIGINT, &sigint_handler) == SIG_ERR) PERR_EXIT("Error registering SIGINT handler");
 
@@ -165,7 +167,7 @@ void setup() {
             .mq_msgsize = MSG_SIZE
     };
     client_queue_id = mq_open(client_queue_name, O_RDONLY | O_CREAT | O_EXCL, 0644, &attr);
-   if (client_queue_id < -1) PERR_EXIT("Queue opening failed");
+    if (client_queue_id < 0) PERR_EXIT("Queue opening failed");
 
     // open server queue
     server_queue_id = mq_open(SERVER_QUEUE, O_WRONLY);

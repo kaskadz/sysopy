@@ -172,7 +172,6 @@ void h_mirror(Msg *msg) {
         PERR_EXIT("Error responding to MIRROR request");
     }
 
-    memset(msg->contents, 0, CONTENTS_SIZE);
 }
 
 void h_calc(Msg *msg) {
