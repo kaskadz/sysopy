@@ -1,3 +1,6 @@
+#define _XOPEN_SOURCE
+#define _POSIX_C_SOURCE 200809L
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <memory.h>
@@ -9,6 +12,11 @@
 #include <sys/types.h>
 #include <sys/ipc.h>
 #include <sys/msg.h>
+#include <sys/stat.h>
+#include <signal.h>
+#include <unistd.h>
+#include <mqueue.h>
+#include <fcntl.h>
 
 #include "rainbow.h"
 #include "protocol.h"
@@ -30,8 +38,9 @@ exit(EXIT_FAILURE);                                     \
 
 
 // - |GLOBAL VARIABLES| ------------------ //
-int client_queue_id = -1;
-int server_queue_id = -1;
+char *client_queue_name = NULL;
+mqd_t client_queue_id = -1;
+mqd_t server_queue_id = -1;
 int client_id = -1;
 int display_prompt = 0;
 
@@ -61,6 +70,8 @@ void send_stop();
 char **make_args(char *line, size_t *param_qtty, char *delim);
 
 char *get_command_params(char *str);
+
+char *generate_queue_name();
 
 
 // - |MAIN| ------------------------------ //
@@ -92,7 +103,7 @@ int main(int argc, char *argv[]) {
         strcpy(line_copy, line);
 
         size_t elem_qtty;
-        char **elems = make_args(line, &elem_qtty, " \n");
+        char **elems = make_args(line, &elem_qtty, " \n\r");
         if (elem_qtty < 1) continue;
         if (strcmp(elems[0], "MIRROR") == 0) {
             if (elem_qtty > 1) {
@@ -146,26 +157,26 @@ void setup() {
     if (signal(SIGINT, &sigint_handler) == SIG_ERR) PERR_EXIT("Error registering SIGINT handler");
 
     // create private queue
-    client_queue_id = msgget(IPC_PRIVATE, IPC_CREAT | 0644u);
-    if (client_queue_id == -1) PERR_EXIT("Queue generation failed");
+    client_queue_name = generate_queue_name();
+    struct mq_attr attr = {
+            .mq_flags = 0,
+            .mq_maxmsg = 10,
+            .mq_curmsgs = 0,
+            .mq_msgsize = MSG_SIZE
+    };
+    client_queue_id = mq_open(client_queue_name, O_RDONLY | O_CREAT | O_EXCL, 0644, &attr);
+   if (client_queue_id < -1) PERR_EXIT("Queue opening failed");
 
-    // get server's queue
-    char *home = getenv("HOME");
-    if (home == NULL) PERR_EXIT("Error getting HOME env variable");
-
-    key_t public_key = ftok(home, PROJECT_ID);
-    if (public_key == -1) PERR_EXIT("Public key generation failed");
-
-    server_queue_id = msgget(public_key, 0644u);
-    if (server_queue_id == -1) PERR_EXIT("Error getting server queue");
+    // open server queue
+    server_queue_id = mq_open(SERVER_QUEUE, O_WRONLY);
+    if (server_queue_id < 0) PERR_EXIT("Error getting server queue");
 }
 
 void cleanup() {
     INFO("Cleaning up..");
     send_stop();
-    if (msgctl(client_queue_id, IPC_RMID, NULL) < 0) {
-        PERR_EXIT("Queue deletion failed");
-    }
+    mq_close(client_queue_id);
+    mq_unlink(client_queue_name);
 }
 
 void sigint_handler(int signal) {
@@ -181,17 +192,19 @@ void register_client() {
             .pid = getpid(),
             .msg_type = SIGNUP,
     };
-    sprintf(msg.contents, "%d", client_queue_id);
+    sprintf(msg.contents, "%s", client_queue_name);
 
-    if (msgsnd(server_queue_id, &msg, MSG_SIZE, 0) < 0) {
+    if (mq_send(server_queue_id, (char *) &msg, MSG_SIZE, PRIORITY) < 0) {
         PERR_EXIT("Error sending SIGNUP message");
     }
 
     Msg resp;
     ssize_t read;
-    if ((read = msgrcv(client_queue_id, &resp, MSG_SIZE, 0, 0)) == -1) {
+    unsigned priority;
+    if ((read = mq_receive(client_queue_id, (char *) &resp, MSG_SIZE, &priority)) == -1) {
         PERR_EXIT("Error receiving SIGNUP response");
     }
+    assert(PRIORITY == priority);
     assert(resp.id == SERVER_ID);
     sscanf(resp.contents, "%d", &client_id);
     assert(client_id != -1);
@@ -211,13 +224,14 @@ void send_mirror(char *str) {
     if (str[len] == '\n' || str[len] == '\r') --len;
     memcpy(msg.contents, str, (len > CONTENTS_SIZE) ? CONTENTS_SIZE : len);
 
-    if (msgsnd(server_queue_id, &msg, MSG_SIZE, 0) < 0) {
+    if (mq_send(server_queue_id, (char *) &msg, MSG_SIZE, PRIORITY) < 0) {
         PERR_EXIT("Error sending MIRROR request");
     }
 
     Msg resp;
     ssize_t read;
-    if ((read = msgrcv(client_queue_id, &resp, MSG_SIZE, 0, 0)) == -1) {
+    unsigned priority;
+    if ((read = mq_receive(client_queue_id, (char *) &resp, MSG_SIZE, &priority)) == -1) {
         PERR_EXIT("Error receiving MIRROR response");
     }
     INFO("Received response for MIRROR request!");
@@ -236,13 +250,14 @@ void send_calc(char *str) {
 
     strcpy(msg.contents, str);
 
-    if (msgsnd(server_queue_id, &msg, MSG_SIZE, 0) < 0) {
+    if (mq_send(server_queue_id, (char *) &msg, MSG_SIZE, PRIORITY) < 0) {
         PERR_EXIT("Error sending CALC request");
     }
 
     Msg resp;
     ssize_t read;
-    if ((read = msgrcv(client_queue_id, &resp, MSG_SIZE, 0, 0)) == -1) {
+    unsigned priority;
+    if ((read = mq_receive(client_queue_id, (char *) &resp, MSG_SIZE, &priority)) == -1) {
         PERR_EXIT("Error receiving CALC response");
     }
     INFO("Received response for CALC request!");
@@ -259,13 +274,14 @@ void send_time() {
             .pid = getpid(),
     };
 
-    if (msgsnd(server_queue_id, &msg, MSG_SIZE, 0) < 0) {
+    if (mq_send(server_queue_id, (char *) &msg, MSG_SIZE, PRIORITY) < 0) {
         PERR_EXIT("Error sending TIME request");
     }
 
     Msg resp;
     ssize_t read;
-    if ((read = msgrcv(client_queue_id, &resp, MSG_SIZE, 0, 0)) == -1) {
+    unsigned priority;
+    if ((read = mq_receive(client_queue_id, (char *) &resp, MSG_SIZE, &priority)) == -1) {
         PERR_EXIT("Error receiving TIME response");
     }
     INFO("Received response for TIME request");
@@ -282,7 +298,7 @@ void send_end() {
             .pid = getpid(),
     };
 
-    if (msgsnd(server_queue_id, &msg, MSG_SIZE, 0) < 0) {
+    if (mq_send(server_queue_id, (char *) &msg, MSG_SIZE, PRIORITY) < 0) {
         PERR_EXIT("Error sending END request");
     }
 }
@@ -295,7 +311,7 @@ void send_stop() {
             .pid = getpid(),
     };
 
-    if (msgsnd(server_queue_id, &msg, MSG_SIZE, 0) < 0) {
+    if (mq_send(server_queue_id, (char *) &msg, MSG_SIZE, PRIORITY) < 0) {
         WARNING("Error sending STOP request. Probably server is down.");
     }
 }
@@ -332,4 +348,14 @@ char *get_command_params(char *str) {
     char *result = calloc(new_len, sizeof(char));
     strcpy(result, &str[i]);
     return result;
+}
+
+char *generate_queue_name(void) {
+    const int LEN = 6;
+    char *name = calloc(LEN + 2, sizeof(char));
+    name[0] = '/';
+    for (int i = 1; i < LEN + 1; ++i) {
+        name[i] = (char) (rand() % ('z' - 'a' + 1) + 'a');
+    }
+    return name;
 }

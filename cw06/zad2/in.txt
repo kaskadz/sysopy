@@ -1,0 +1,7 @@
+TIME
+CALC 3 + 4
+CALC 8 - 10
+CALC 11 * 3
+CALC 8 / 2
+MIRROR abba
+MIRROR abcd

@@ -1,3 +1,6 @@
+#define _XOPEN_SOURCE
+#define _POSIX_C_SOURCE 200809L
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <memory.h>
@@ -9,6 +12,11 @@
 #include <sys/types.h>
 #include <sys/ipc.h>
 #include <sys/msg.h>
+#include <sys/stat.h>
+#include <signal.h>
+#include <unistd.h>
+#include <mqueue.h>
+#include <fcntl.h>
 
 #include "rainbow.h"
 #include "protocol.h"
@@ -29,8 +37,8 @@ exit(EXIT_FAILURE);                                                     \
 
 
 // - |GLOBAL VARIABLES| ------------------ //
-int server_queue_id = -1;
-int client_queues[MAX_CLIENTS];
+mqd_t server_queue_id = -1;
+mqd_t client_queues[MAX_CLIENTS];
 int client_pids[MAX_CLIENTS];
 int client_count = 0;
 
@@ -62,6 +70,8 @@ char *fetch_date();
 
 int calc(char op[4], int arg1, int arg2);
 
+void set_nonblock();
+
 
 // - |MAIN| ------------------------------ //
 int main() {
@@ -79,15 +89,15 @@ void setup() {
     if (atexit(cleanup) == -1) PERR_EXIT("Error registering exit handler");
     if (signal(SIGINT, &sigint_handler) == SIG_ERR) PERR_EXIT("Error registering SIGINT handler");
 
+    struct mq_attr attr = {
+            .mq_flags = 0,
+            .mq_maxmsg = 10,
+            .mq_curmsgs = 0,
+            .mq_msgsize = MSG_SIZE
+    };
 
-    char *home = getenv("HOME");
-    if (home == NULL) PERR_EXIT("Error getting HOME env variable");
-
-    key_t public_key = ftok(home, PROJECT_ID);
-    if (public_key == -1) PERR_EXIT("Public key generation failed");
-
-    server_queue_id = msgget(public_key, IPC_CREAT | 0644u);
-    if (server_queue_id == -1) PERR_EXIT("Public queue generation failed");
+    server_queue_id = mq_open(SERVER_QUEUE, O_RDONLY | O_CREAT | O_EXCL, 0644, &attr);
+    if (server_queue_id < 0) PERR_EXIT("Public queue generation failed");
 
     for (int i = 0; i < MAX_CLIENTS; ++i) {
         client_pids[i] = -1;
@@ -97,8 +107,13 @@ void setup() {
 
 void cleanup() {
     INFO("Cleaning up..");
-    if (msgctl(server_queue_id, IPC_RMID, NULL) < 0) {
-        PERR_EXIT("Queue deletion failed");
+    INFO("Removing queue %d\n", server_queue_id);
+    mq_unlink(SERVER_QUEUE);
+    for (int i = 0; i < MAX_CLIENTS; ++i) {
+        if (client_queues[i] > 0) {
+            INFO("Closing queue with descriptor %d\n", client_queues[i]);
+            mq_close(client_queues[i]);
+        }
     }
 }
 
@@ -112,9 +127,13 @@ void receive_loop() {
     INFO("Entering receiving loop..");
     Msg msg;
     ssize_t read;
-    int should_end = 0;
+    unsigned priority;
 
-    while ((read = msgrcv(server_queue_id, &msg, MSG_SIZE, 0, should_end ? IPC_NOWAIT : 0)) != -1) {
+    while ((read = mq_receive(server_queue_id, (char *) &msg, MSG_SIZE, &priority)) != -1) {
+        assert(priority == PRIORITY);
+        assert(read > 0);
+        assert(read <= (ssize_t) MSG_SIZE);
+
         INFO("Received a message!");
         int client_id = msg.id;
         if (msg.msg_type == SIGNUP) {
@@ -139,7 +158,7 @@ void receive_loop() {
                     break;
                 case END:
                     h_end(&msg);
-                    should_end = 1;
+                    set_nonblock();
                     break;
                 default: WARNING(
                         "Unknown message type: %zu from client: (id, pid) = (%d, %d)",
@@ -168,7 +187,7 @@ void h_mirror(Msg *msg) {
     }
     resp.contents[len] = '\0';
 
-    if (msgsnd(client_queues[msg->id], &resp, MSG_SIZE, 0) < 0) {
+    if (mq_send(client_queues[msg->id], (char *) &resp, MSG_SIZE, PRIORITY) < 0) {
         PERR_EXIT("Error responding to MIRROR request");
     }
 
@@ -190,7 +209,7 @@ void h_calc(Msg *msg) {
 
     sprintf(resp.contents, "%d", result);
 
-    if (msgsnd(client_queues[msg->id], &resp, MSG_SIZE, 0) < 0) {
+    if (mq_send(client_queues[msg->id], (char *) &resp, MSG_SIZE, PRIORITY) < 0) {
         PERR_EXIT("Error responding to CALC request");
     }
 }
@@ -206,7 +225,7 @@ void h_time(Msg *msg) {
     strcpy(resp.contents, date);
     free(date);
 
-    if (msgsnd(client_queues[msg->id], &resp, MSG_SIZE, 0) < 0) {
+    if (mq_send(client_queues[msg->id], (char *) &resp, MSG_SIZE, PRIORITY) < 0) {
         PERR_EXIT("Error responding to TIME request");
     }
 }
@@ -219,6 +238,7 @@ void h_end(Msg *msg) {
 void h_stop(Msg *msg) {
     INFO("Handling STOP message");
     INFO("Unregistering client: (id, pid) = (%d, %d)", msg->id, msg->pid);
+    mq_close(client_queues[msg->id]);
     client_queues[msg->id] = -1;
     client_pids[msg->id] = -1;
 }
@@ -227,16 +247,11 @@ void h_signup(Msg *msg) {
     INFO("Handling SIGNUP message");
     assert(msg->id == -1);
 
-    int client_queue_id;
-    if (sscanf(msg->contents, "%d", &client_queue_id) < 0) {
-        ERR_EXIT("Error reading client's queue key: %s", msg->contents);
-    }
-
     if (client_count >= MAX_CLIENTS) {
-        WARNING("Max client count reached")
+        WARNING("Max client count reached. Client not registered!");
     } else {
         client_pids[client_count] = msg->pid;
-        client_queues[client_count] = client_queue_id;
+        client_queues[client_count] = mq_open(msg->contents, O_WRONLY);;
 
         INFO("Registered new client: (pid, id) = (%d, %d)", msg->pid, client_count);
 
@@ -247,7 +262,7 @@ void h_signup(Msg *msg) {
 
         sprintf(resp.contents, "%d", client_count);
 
-        if (msgsnd(client_queues[client_count], &resp, MSG_SIZE, 0) < 0) {
+        if (mq_send(client_queues[client_count], (char *) &resp, MSG_SIZE, PRIORITY) < 0) {
             PERR_EXIT("Error sending client's id");
         }
         INFO("Register response sent to client");
@@ -284,4 +299,12 @@ char *fetch_date() {
 
     pclose(pipe);
     return line;
+}
+
+void set_nonblock(void) {
+    struct mq_attr *attr = calloc(1, sizeof(struct mq_attr));
+    mq_getattr(server_queue_id, attr);
+    attr->mq_flags |= O_NONBLOCK;
+    mq_setattr(server_queue_id, attr, NULL);
+    free(attr);
 }

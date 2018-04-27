@@ -6,10 +6,10 @@ OPTS=-Wall -Wextra
 all: server client
 
 server: server.o protocol.h rainbow.h
-	$(CC) $(OPTS) $^ -o $@
+	$(CC) $(OPTS) $^ -o $@ -lrt
 
 client: client.o protocol.h rainbow.h
-	$(CC) $(OPTS) $^ -o $@
+	$(CC) $(OPTS) $^ -o $@ -lrt
 
 server.o: server.c protocol.h rainbow.h
 	$(CC) -c $^ $(OPTS)
